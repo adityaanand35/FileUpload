@@ -1,4 +1,4 @@
-<input style="display: none" type="file" (change)="setFile($event)" #fileInput>
+<input style="display: none" type="file" (change)="setFile($event)" #fileInput multiple>
 <button type="button" (click)="fileInput.click()">select file</button>
 <button (click)="uploadFile()">Upload</button>  
 
