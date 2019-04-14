@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -7,36 +7,37 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  selectedFile: FileList;
+  selectedFiles: FileList;
 
   constructor(private http: HttpClient) { }
   setFile(event) {
-    this.selectedFile = event.target.files;
-    // console.log(event.target.files);
-    // for (let i = 0; i < event.target.files.length; i++) {
-    //   this.selectedFile.item[i] = <File>event.target.files[i];
-    // }
+    this.selectedFiles = event.target.files;
   }
 
   uploadFile() {
-    const fd = new FormData();
-    fd.append('contractorId', "123");
-    for (let i = 0; i < this.selectedFile.length; i++) {
-      console.log(this.selectedFile.item(i));
-      fd.append('image', this.selectedFile.item(i), this.selectedFile.item.name);
-    }
-    console.log("fd",fd);
-    this.http.post('<url>', fd, {
-      reportProgress: true,
-      observe: 'events'
-    }).subscribe(event => {
-      if (event.type === HttpEventType.UploadProgress) {
-        console.log('Upload Progress: ', Math.round(event.loaded / event.total * 100), '%');
-      } else if (event.type === HttpEventType.Response) {
-        console.log(event);
+    const fd: FormData = new FormData();
+    fd.append('siteId', "122");
+    fd.append('latLong', "5,6");
+    if (this.selectedFiles && this.selectedFiles.length < 6) {
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        fd.append('image', this.selectedFiles.item(i));
       }
-
-
-    })
+      console.log("fd", fd);
+      this.http.post('http://localhost:3000/app/updateSite', fd, {
+        reportProgress: true,
+        observe: 'events'
+        // headers: new HttpHeaders({
+        //   'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
+        // })
+      }).subscribe(event => {
+        if (event.type === HttpEventType.UploadProgress) {
+          console.log('Upload Progress: ', Math.round(event.loaded / event.total * 100), '%');
+        } else if (event.type === HttpEventType.Response) {
+          console.log(event);
+        }
+      })
+    } else {
+      this.selectedFiles.length > 5 ? alert("You cannot upload more than 5 images.") : alert("Please select a file.")
+    }
   }
 }
